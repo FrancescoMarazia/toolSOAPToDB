@@ -56,7 +56,7 @@ public class JavaApi {
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_MDA_T602) {
+				if(tipoChiamata == TypeChiamata.SALUTE_CONTRATTI_T601) {
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);
 				List<Entita> result = new ArrayList<Entita>();
@@ -142,7 +142,7 @@ public class JavaApi {
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
-					System.out.println(query);
+					//System.out.println(query);
 					
 					query = Queries.getQueryFirstPart(soapCall.typeChiamata, "TEMP_"+soapCall.typeChiamata.name());
 					counter = 0;

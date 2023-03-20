@@ -57,16 +57,16 @@ public class Fattura implements Entita{
 
 		ID_SIS_SORGENTE = fattura.get("d4p1:ID_SIS_SORGENTE");
 		NUM_FATTURA = fattura.get("d4p1:NUM_FATTURA");
-		ESERC_FATTURA = fattura.get("d4p1:ESERC_FATTURA") != null ? fattura.get("d4p1:ESERC_FATTURA") : "null";
+		ESERC_FATTURA = fattura.get("d4p1:ESERC_FATTURA") != "" ? fattura.get("d4p1:ESERC_FATTURA") : "null";
 		POS_FATTURA = fattura.get("d4p1:POS_FATTURA");
 		NUM_MDA = fattura.get("d4p1:NUM_MDA");
 		DES_CONT_FATT = fattura.get("d4p1:DES_CONT_FATT");
 		NUM_FATTURA_EST = fattura.get("d4p1:NUM_FATTURA_EST");
 		FLAG_ADD_SUCC = fattura.get("d4p1:FLAG_ADD_SUCC");
 		DATA_REG_FATTURA = fattura.get("d4p1:DATA_REG_FATTURA");
-		IMPORTO_POS_FATTURA = fattura.get("d4p1:IMPORTO_POS_FATTURA") != null ? fattura.get("d4p1:IMPORTO_POS_FATTURA") : "null";
+		IMPORTO_POS_FATTURA = fattura.get("d4p1:IMPORTO_POS_FATTURA") != "" ? fattura.get("d4p1:IMPORTO_POS_FATTURA") : "null";
 		DIVISA_FATTURA = fattura.get("d4p1:DIVISA_FATTURA");
-		VAL_POS_FATT_EUR = fattura.get("d4p1:VAL_POS_FATT_EUR") != null ? fattura.get("d4p1:VAL_POS_FATT_EUR") : "null";
+		VAL_POS_FATT_EUR = fattura.get("d4p1:VAL_POS_FATT_EUR") != "" ? fattura.get("d4p1:VAL_POS_FATT_EUR") : "null";
 		NUM_DOC_ODL = fattura.get("d4p1:NUM_DOC_ODL");
 		POS_DOC_ODL = fattura.get("d4p1:POS_DOC_ODL");
 		CAMBI_FATTURA = fattura.get("d4p1:CAMBI_FATTURA");
@@ -80,7 +80,7 @@ public class Fattura implements Entita{
 		DATA_INSERIMENTO = fattura.get("d4p1:DATA_INSERIMENTO");
 		ELEMENTO_WBS = fattura.get("d4p1:ELEMENTO_WBS");
 		FLAG_DARE_AVERE = fattura.get("d4p1:FLAG_DARE_AVERE");
-		IMPORTO_DIVISA_DOC = fattura.get("d4p1:IMPORTO_DIVISA_DOC") != null ? fattura.get("d4p1:IMPORTO_DIVISA_DOC") : "null";
+		IMPORTO_DIVISA_DOC = fattura.get("d4p1:IMPORTO_DIVISA_DOC") != "" ? fattura.get("d4p1:IMPORTO_DIVISA_DOC") : "null";
 		NUM_BOLLA = fattura.get("d4p1:NUM_BOLLA");
 		NUM_CICLO = fattura.get("d4p1:NUM_CICLO");
 		NUM_PRINCPL_CESPITE = fattura.get("d4p1:NUM_PRINCPL_CESPITE");
@@ -92,7 +92,7 @@ public class Fattura implements Entita{
 		ORA_CREAZIONE = fattura.get("d4p1:ORA_CREAZIONE");
 		ORDINE_CO = fattura.get("d4p1:ORDINE_CO");
 		PROFIT_CENTER = fattura.get("d4p1:PROFIT_CENTER");
-		QUANTITA = fattura.get("d4p1:QUANTITA") != null ? fattura.get("d4p1:QUANTITA") : "null";
+		QUANTITA = fattura.get("d4p1:QUANTITA") != "" ? fattura.get("d4p1:QUANTITA") : "null";
 		SOCIETA = fattura.get("d4p1:SOCIETA");
 		TESTO_POS_FATTURA = fattura.get("d4p1:TESTO_POS_FATTURA");
 		TIPO_DES_CONT = fattura.get("d4p1:TIPO_DES_CONT");
