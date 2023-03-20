@@ -19,7 +19,7 @@ public class Mda implements Entita{
 		NUM_POS_DESCONT = mda.get("d4p1:NUM_POS_DESCONT") != "" ? mda.get("d4p1:NUM_POS_DESCONT") : "null";
 		POS_DOC_ODL = mda.get("d4p1:POS_DOC_ODL");
 		VAL_MDA_DIVDOC = mda.get("d4p1:VAL_MDA_DIVDOC") != "" ? mda.get("d4p1:NUM_POS_DESCONT") : "null";
-		VAL_MDA_EUR = mda.get("d4p1:VAL_MDA_EUR");
+		VAL_MDA_EUR = mda.get("d4p1:VAL_MDA_EUR") != "" ? mda.get("d4p1:VAL_MDA_EUR") : "null";
 	}
 
 	@Override

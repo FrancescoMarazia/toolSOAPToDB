@@ -34,7 +34,7 @@ public class JavaApi {
 
 		LocalDate currentDate = java.time.LocalDate.now();
 			
-		//LocalDate startDate = currentDate.minusYears(5).withMonth(1).withDayOfMonth(1);
+//		LocalDate startDate = currentDate.minusYears(5).withMonth(1).withDayOfMonth(1);
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String formattedDate = "2000-01-01";
@@ -52,27 +52,24 @@ public class JavaApi {
 				case SALUTE_FATTURE_T603:
 					chunksInterval = 1;
 					break;
-				case SALUTE_PARTNER_CONTRATTO_T605:
+				case SALUTE_CONTRATTI_T601:
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_PARTNER_CONTRATTO_T605) {
+				if(tipoChiamata == TypeChiamata.SALUTE_MDA_T602) {
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);
 				List<Entita> result = new ArrayList<Entita>();
 				
 				for(int c = 0; c < chunks.size();c++) {
 					
-					
-					System.out.println("Sto eseguendo la chiamata " + tipoChiamata.name());
-					
+					System.out.println("Sto eseguendo la chiamata " + tipoChiamata.name());	
 					
 					ChiamataSoap soapCall = new ChiamataSoap(tipoChiamata, chunks.get(c)[0], chunks.get(c)[1]);
 					
 					List<Entita> chunkResult = new ArrayList<Entita>();
 					
 					chunkResult = soapCall.getData();
-					
 					
 					result.addAll(chunkResult);
 					
@@ -96,14 +93,22 @@ public class JavaApi {
 		
 		int counter = 0;
 		int insertSize = 200;
+		
+		
+		// CREAZIONE TABELLA TEMPORANEA CON I DATI PRECEDENTI A START DATE
+		
+		String createTableTempQuery="";
+		
+		if(soapCall.hasDates()) {
 			
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String startDateString = startDate.format(formatter);
 
-		// CREAZIONE TABELLA TEMPORANEA CON I DATI PRECEDENTI A START DATE
-			
-		String createTableTempQuery = "CREATE TABLE TEMP_"+soapCall.typeChiamata.name()+" AS (SELECT * FROM "+soapCall.typeChiamata.name()+" WHERE TO_DATE('"+Queries.getSortingField(soapCall.typeChiamata)+"','YYYYMMDD') < TO_DATE('"+startDateString+"', 'YYYYMMDD')";
-
+		createTableTempQuery = "CREATE TABLE TEMP_"+soapCall.typeChiamata.name()+" AS (SELECT * FROM "+soapCall.typeChiamata.name()+" WHERE TO_DATE("+Queries.getSortingField(soapCall.typeChiamata)+",'YYYYMMDD') < TO_DATE('"+startDateString+"', 'YYYYMMDD'))";
+		}else {
+			createTableTempQuery = "CREATE TABLE TEMP_"+soapCall.typeChiamata.name()+" AS (SELECT * FROM "+soapCall.typeChiamata.name()+" WHERE(1=0))";
+		}
+		
 		try {
 			Statement createTempTableStmt;
 			createTempTableStmt = conn.createStatement();
@@ -112,10 +117,7 @@ public class JavaApi {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-
-			System.out.println("Tabella temp creata");
-		
+		System.out.println("Tabella temp creata");
 			
 			// INSERIMENTO DATI NELLA TABELLA TEMP
 			
@@ -137,7 +139,8 @@ public class JavaApi {
 						insertQueryStmt = conn.createStatement();
 						insertQueryStmt.executeUpdate(query);
 						insertQueryStmt.close();
-					} catch (SQLException ignored) {
+					} catch (SQLException e) {
+						e.printStackTrace();
 					}
 					System.out.println(query);
 					
@@ -151,14 +154,14 @@ public class JavaApi {
 			// DELETE DELLA VECCHIA TABELLA
 
 			String deleteTableQuery = "DROP TABLE " + soapCall.typeChiamata.name();
-//			try {
-//				Statement deleteOldTableStmt;
-//				deleteOldTableStmt = conn.createStatement();
-//				deleteOldTableStmt.executeUpdate(deleteTableQuery);
-//				deleteOldTableStmt.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				Statement deleteOldTableStmt;
+				deleteOldTableStmt = conn.createStatement();
+				deleteOldTableStmt.executeUpdate(deleteTableQuery);
+				deleteOldTableStmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			
 			System.out.println("Tabella " + soapCall.typeChiamata.name() + " cancellata...");
 
@@ -166,14 +169,14 @@ public class JavaApi {
 
 			String renameQuery = "RENAME TEMP_" + soapCall.typeChiamata.name() + " TO "
 					+ soapCall.typeChiamata.name();
-//			try {
-//				Statement renameTempTableStmt;
-//				renameTempTableStmt = conn.createStatement();
-//				renameTempTableStmt.executeUpdate(renameQuery);
-//				renameTempTableStmt.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				Statement renameTempTableStmt;
+				renameTempTableStmt = conn.createStatement();
+				renameTempTableStmt.executeUpdate(renameQuery);
+				renameTempTableStmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			
 			System.out.println("Tabella TEMP_" + soapCall.typeChiamata.name() + " rinominata in "+ soapCall.typeChiamata.name());
 
