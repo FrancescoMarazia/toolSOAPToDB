@@ -78,7 +78,7 @@ public class JavaApi {
 					
 					if(c == chunks.size()-1) {
 						System.out.println(result.size() + "elementi ritornati");
-					updateTable(conn, result, soapCall);
+					updateTable(conn, result, soapCall,startDate);
 					}
 				}
 				
@@ -92,33 +92,30 @@ public class JavaApi {
 
 	}
 
-	static void updateTable(Connection conn, List<Entita> lista, ChiamataSoap soapCall) {
+	static void updateTable(Connection conn, List<Entita> lista, ChiamataSoap soapCall, LocalDate startDate) {
 		
 		int counter = 0;
 		int insertSize = 200;
-
-		if (soapCall.hasDates()) {
-
-		
-
-		} else {
-
-			System.out.println("Nessun range di date per la tabella");
 			
-				
-			// CREAZIONE TABELLA TEMPORANEA
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String startDateString = startDate.format(formatter);
 
-//			try {
-//				Statement createTempTableStmt;
-//				createTempTableStmt = conn.createStatement();
-//				createTempTableStmt.executeUpdate(Queries.CREATE_TABLE_TEMP_MDA);
-//				createTempTableStmt.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
+		// CREAZIONE TABELLA TEMPORANEA CON I DATI PRECEDENTI A START DATE
 			
-			System.out.println("Tabella temp creata");
+		String createTableTempQuery = "CREATE TABLE TEMP_"+soapCall.typeChiamata.name()+" AS (SELECT * FROM "+soapCall.typeChiamata.name()+" WHERE TO_DATE('"+Queries.getSortingField(soapCall.typeChiamata)+"','YYYYMMDD') < TO_DATE('"+startDateString+"', 'YYYYMMDD')";
+
+		try {
+			Statement createTempTableStmt;
+			createTempTableStmt = conn.createStatement();
+			createTempTableStmt.executeUpdate(createTableTempQuery);
+			createTempTableStmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+
+
+			System.out.println("Tabella temp creata");
+		
 			
 			// INSERIMENTO DATI NELLA TABELLA TEMP
 			
@@ -135,13 +132,13 @@ public class JavaApi {
 					counter ++;
 				}else {
 					query += insertQuery + ") SELECT * FROM p";
-//					try {
-//						Statement insertQueryStmt;
-//						insertQueryStmt = conn.createStatement();
-//						insertQueryStmt.executeUpdate(queryFirstPart);
-//						insertQueryStmt.close();
-//					} catch (SQLException ignored) {
-//					}
+					try {
+						Statement insertQueryStmt;
+						insertQueryStmt = conn.createStatement();
+						insertQueryStmt.executeUpdate(query);
+						insertQueryStmt.close();
+					} catch (SQLException ignored) {
+					}
 					System.out.println(query);
 					
 					query = Queries.getQueryFirstPart(soapCall.typeChiamata, "TEMP_"+soapCall.typeChiamata.name());

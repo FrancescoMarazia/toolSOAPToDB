@@ -27,8 +27,24 @@ public class Queries {
 			query = "INSERT INTO "+tableName+" (AREA_VALORIZZAZIONE,DIVISIONE,DIVISIONE_LOCALITA,DIVISIONE_NAME,DIVISIONE_NAZIONE,ID_SIS_SORGENTE,INDIRIZZO,REGIONE,SOCIETA) with p (AREA_VALORIZZAZIONE,DIVISIONE,DIVISIONE_LOCALITA,DIVISIONE_NAME,DIVISIONE_NAZIONE,ID_SIS_SORGENTE,INDIRIZZO,REGIONE,SOCIETA) as (";
 			break;
 		}
-		
 		return query;
+	}
+	
+	public static String getSortingField(TypeChiamata tipoChiamata) {
+		String sortingField = "";
+		switch(tipoChiamata) {
 		
+		case SALUTE_CONTRATTI_T601:
+			sortingField = "INIZIO_VALIDITA";
+			break;	
+		case SALUTE_ORDINE_DI_LAVORO_T600:
+			sortingField = "DATA_CREAZIONE_ODL";
+			break;
+		case SALUTE_FATTURE_T603: case SALUTE_PARTNER_CONTRATTO_T605:
+			sortingField = "DATA_INSERIMENTO";
+			break;
+
+		}
+		return sortingField;
 	}
 }
