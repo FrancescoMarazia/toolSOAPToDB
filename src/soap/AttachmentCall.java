@@ -13,6 +13,9 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,10 +27,11 @@ import jdbc.model.entities.Entita;
 
 public class AttachmentCall {
 	
-	private String[] url = new String[] {};
-	private String[][] credentials;
+	public String[] url = new String[] {};
+	public String[][] credentials;
+	public String servizio;
 	
-	AttachmentCall(String id_sis_sorgente){
+	public AttachmentCall(String id_sis_sorgente){
 		switch(id_sis_sorgente) {
 		case "03": 
 			// IESS
@@ -45,8 +49,9 @@ public class AttachmentCall {
 			break;
 
 		case "R0":
-			this.url = new String[]{"http://s02srv000qo.ad02.eni.intranet:8052/sap/bc/srt/wsdl/bndg_6C5CED63C5D8B74DE10000000A6726AB/wsdl11/allinone/ws_policy/document?sap-client=201","http://s02log00bdp.hosts.eni.intranet:8051/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zcont_slt/201/zcont_slt/zcont_slt_binding?sap-client=201"};
+			this.url = new String[]{"http://s02srv000qo.ad02.eni.intranet:8052/sap/bc/srt/rfc/sap/zcont_slt/201/zcont_slt/zcont_slt_binding","http://s02log00bdp.hosts.eni.intranet:8051/sap/bc/srt/rfc/sap/zcont_slt/201/zcont_slt/zcont_slt_binding"};
 			this.credentials = new String[][] {{"TECHSLT","4898er3j"},{"TECHSLT","TECHSLT"}};
+			this.servizio = "CSRM";
 			break;
 
 		case "18":
@@ -60,11 +65,12 @@ public class AttachmentCall {
 		String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:sap-com:document:sap:rfc:functions\"><soapenv:Header/><soapenv:Body><urn:ZATTA_CONT_SLT><IT_EBELN><item><EBELN>"+ebeln+"</EBELN></item></IT_EBELN></urn:ZATTA_CONT_SLT></soapenv:Body></soapenv:Envelope>";
 		
 		String parentNodeName = "item";
-
+		
 		List<Entita> items = new ArrayList<Entita>();
 		
 		for(int u=0; u < this.url.length; u++)
 		{
+
 			try {
 
 			URL obj = new URL(this.url[u]);
@@ -86,7 +92,7 @@ public class AttachmentCall {
 			wr.close();
 
 			String responseStatus = conn.getResponseMessage();
-			System.out.println(responseStatus);
+			//System.out.println(responseStatus);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -96,10 +102,12 @@ public class AttachmentCall {
 
 			Document doc = db.parse(conn.getInputStream());
 			doc.getDocumentElement().normalize();
-
 			
 			NodeList nodeList = doc.getElementsByTagName(parentNodeName);
-
+			
+			if(nodeList.getLength()>0)
+			{System.out.println(nodeList.getLength());}
+			
 			for (int itr = 0; itr < nodeList.getLength(); itr++) {
 
 				Node node = nodeList.item(itr);
@@ -119,11 +127,12 @@ public class AttachmentCall {
 							
 							String key = childNode.getNodeName().trim();
 							String value = childNode.getTextContent().trim();
-							
 							callObj.put(key, value);
 							
 						}
 					}
+					callObj.put("SERVIZIO", this.servizio);
+					
 					
 					Attachment atta = new Attachment(callObj);
 					items.add(atta);
@@ -135,6 +144,7 @@ public class AttachmentCall {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+			
 	}
 
 		return items;

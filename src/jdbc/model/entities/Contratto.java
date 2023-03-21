@@ -5,7 +5,7 @@ import java.util.Map;
 public class Contratto implements Entita{
 	
 	
-	String ID_SIS_SORGENTE,
+	public String ID_SIS_SORGENTE,
 	NUM_DOC,
 	OGGETTO_CONTR,
 	ID_CONTRATTO_APCH,

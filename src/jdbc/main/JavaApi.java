@@ -21,11 +21,13 @@ import java.util.List;
 
 import constants.Queries;
 import constants.TypeChiamata;
-import jdbc.model.entities.AnagraficaPlant;
+
+import jdbc.model.entities.Contratto;
+import jdbc.model.entities.Attachment;
 import jdbc.model.entities.Entita;
-import jdbc.model.entities.Mda;
-import jdbc.model.entities.PartnerContratto;
+
 import soap.ChiamataSoap;
+import soap.AttachmentCall;
 
 public class JavaApi {
 
@@ -56,7 +58,7 @@ public class JavaApi {
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_FATTURE_T603) {
+				if(tipoChiamata == TypeChiamata.SALUTE_CONTRATTI_T601) {
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);
 				List<Entita> result = new ArrayList<Entita>();
@@ -73,14 +75,30 @@ public class JavaApi {
 					
 					result.addAll(chunkResult);
 					
-					if(c == chunks.size()-1) {
-						System.out.println(result.size() + "elementi ritornati");
-					updateTable(conn, result, soapCall,startDate);
-					}
+//					if(c == chunks.size()-1) {
+//						System.out.println(result.size() + "elementi ritornati");
+//					updateTable(conn, result, soapCall.typeChiamata.name(),soapCall.hasDates(),startDate);
+//					}
 				}
-				
+					
+					List<Entita> attachments = new ArrayList<Entita>();
+					
+					for(int i = 0; i < result.size();i++) {
+						
+						Contratto contratto = (Contratto) result.get(i);				
+						AttachmentCall allegati = new AttachmentCall(contratto.ID_SIS_SORGENTE);
+						
+						List<Entita> contratto_attas = new ArrayList<Entita>();
+						
+						contratto_attas = allegati.getAttachments(contratto.NUM_DOC);
+						attachments.addAll(contratto_attas);
+						
+					}
+					updateTable(conn,attachments,"SALUTE_ATTACHMENT_T607",false,startDate);
 				}
 			}
+			
+			
 
 			conn.close();
 		} catch (SQLException exc) {
@@ -89,7 +107,7 @@ public class JavaApi {
 
 	}
 
-	static void updateTable(Connection conn, List<Entita> lista, ChiamataSoap soapCall, LocalDate startDate) {
+	static void updateTable(Connection conn, List<Entita> lista, String soapCallName, boolean hasDates, LocalDate startDate) {
 		
 		int counter = 0;
 		int insertSize = 200;
@@ -99,14 +117,14 @@ public class JavaApi {
 		
 		String createTableTempQuery="";
 		
-		if(soapCall.hasDates()) {
+		if(hasDates) {
 			
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String startDateString = startDate.format(formatter);
 
-		createTableTempQuery = "CREATE TABLE TEMP_"+soapCall.typeChiamata.name()+" AS (SELECT * FROM "+soapCall.typeChiamata.name()+" WHERE TO_DATE("+Queries.getSortingField(soapCall.typeChiamata)+",'YYYYMMDD') < TO_DATE('"+startDateString+"', 'YYYYMMDD'))";
+		createTableTempQuery = "CREATE TABLE TEMP_"+soapCallName+" AS (SELECT * FROM "+soapCallName+" WHERE TO_DATE("+Queries.getSortingField(soapCallName)+",'YYYYMMDD') < TO_DATE('"+startDateString+"', 'YYYYMMDD'))";
 		}else {
-			createTableTempQuery = "CREATE TABLE TEMP_"+soapCall.typeChiamata.name()+" AS (SELECT * FROM "+soapCall.typeChiamata.name()+" WHERE(1=0))";
+			createTableTempQuery = "CREATE TABLE TEMP_"+soapCallName+" AS (SELECT * FROM "+soapCallName+" WHERE(1=0))";
 		}
 		
 		try {
@@ -123,7 +141,7 @@ public class JavaApi {
 			
 			System.out.println("Inserimento dati nella tabella. Attendere...");
 			
-			String query = Queries.getQueryFirstPart(soapCall.typeChiamata, "TEMP_"+soapCall.typeChiamata.name());
+			String query = Queries.getQueryFirstPart(soapCallName, "TEMP_"+soapCallName);
 				
 			for (int i = 0; i < lista.size(); i++) {
 
@@ -139,12 +157,13 @@ public class JavaApi {
 						insertQueryStmt = conn.createStatement();
 						insertQueryStmt.executeUpdate(query);
 						insertQueryStmt.close();
+						System.out.println(query);
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
 					//System.out.println(query);
 					
-					query = Queries.getQueryFirstPart(soapCall.typeChiamata, "TEMP_"+soapCall.typeChiamata.name());
+					query = Queries.getQueryFirstPart(soapCallName, "TEMP_"+soapCallName);
 					counter = 0;
 				}
 			}
@@ -153,7 +172,7 @@ public class JavaApi {
 
 			// DELETE DELLA VECCHIA TABELLA
 
-			String deleteTableQuery = "DROP TABLE " + soapCall.typeChiamata.name();
+			String deleteTableQuery = "DROP TABLE " + soapCallName;
 			try {
 				Statement deleteOldTableStmt;
 				deleteOldTableStmt = conn.createStatement();
@@ -163,12 +182,12 @@ public class JavaApi {
 				e.printStackTrace();
 			}
 			
-			System.out.println("Tabella " + soapCall.typeChiamata.name() + " cancellata...");
+			System.out.println("Tabella " + soapCallName + " cancellata...");
 
 			// RINOMINA LA TABELLA TEMPORANEA
 
-			String renameQuery = "RENAME TEMP_" + soapCall.typeChiamata.name() + " TO "
-					+ soapCall.typeChiamata.name();
+			String renameQuery = "RENAME TEMP_" + soapCallName + " TO "
+					+ soapCallName;
 			try {
 				Statement renameTempTableStmt;
 				renameTempTableStmt = conn.createStatement();
@@ -178,7 +197,7 @@ public class JavaApi {
 				e.printStackTrace();
 			}
 			
-			System.out.println("Tabella TEMP_" + soapCall.typeChiamata.name() + " rinominata in "+ soapCall.typeChiamata.name());
+			System.out.println("Tabella TEMP_" + soapCallName + " rinominata in "+ soapCallName);
 
 		
 
