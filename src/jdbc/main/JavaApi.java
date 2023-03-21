@@ -50,13 +50,13 @@ public class JavaApi {
 				Integer chunksInterval = null;
 				switch(tipoChiamata) {
 				case SALUTE_FATTURE_T603:
-					chunksInterval = 1;
+					chunksInterval = 2;
 					break;
 				case SALUTE_CONTRATTI_T601:
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_CONTRATTI_T601) {
+				if(tipoChiamata == TypeChiamata.SALUTE_FATTURE_T603) {
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);
 				List<Entita> result = new ArrayList<Entita>();
