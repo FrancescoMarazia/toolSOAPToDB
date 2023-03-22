@@ -58,7 +58,7 @@ public class JavaApi {
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_CONTRATTI_T601) {
+				if(tipoChiamata == TypeChiamata.SALUTE_ORDINE_DI_LAVORO_T600) {
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);
 				List<Entita> result = new ArrayList<Entita>();
@@ -75,26 +75,26 @@ public class JavaApi {
 					
 					result.addAll(chunkResult);
 					
-//					if(c == chunks.size()-1) {
-//						System.out.println(result.size() + "elementi ritornati");
-//					updateTable(conn, result, soapCall.typeChiamata.name(),soapCall.hasDates(),startDate);
-//					}
+					if(c == chunks.size()-1) {
+						System.out.println(result.size() + "elementi ritornati");
+					updateTable(conn, result, soapCall.typeChiamata.name(),soapCall.hasDates(),startDate);
+					}
 				}
 					
-					List<Entita> attachments = new ArrayList<Entita>();
-					
-					for(int i = 0; i < result.size();i++) {
-						
-						Contratto contratto = (Contratto) result.get(i);				
-						AttachmentCall allegati = new AttachmentCall(contratto.ID_SIS_SORGENTE);
-						
-						List<Entita> contratto_attas = new ArrayList<Entita>();
-						
-						contratto_attas = allegati.getAttachments(contratto.NUM_DOC);
-						attachments.addAll(contratto_attas);
-						
-					}
-					updateTable(conn,attachments,"SALUTE_ATTACHMENT_T607",false,startDate);
+//					List<Entita> attachments = new ArrayList<Entita>();
+//					
+//					for(int i = 0; i < result.size();i++) {
+//						
+//						Contratto contratto = (Contratto) result.get(i);				
+//						AttachmentCall allegati = new AttachmentCall(contratto.ID_SIS_SORGENTE);
+//						
+//						List<Entita> contratto_attas = new ArrayList<Entita>();
+//						
+//						contratto_attas = allegati.getAttachments(contratto.NUM_DOC);
+//						attachments.addAll(contratto_attas);
+//						
+//					}
+//					updateTable(conn,attachments,"SALUTE_ATTACHMENT_T607",false,startDate);
 				}
 			}
 			
@@ -136,7 +136,23 @@ public class JavaApi {
 			e.printStackTrace();
 		}
 		System.out.println("Tabella temp creata");
-			
+		
+		
+		// CREAZIONE TRIGGER AUTOINCREMENT
+		String[] triggerAndSeq = Queries.getTrigger(soapCallName);
+		if(triggerAndSeq[0] != null) {
+		String createTriggerQuery = "create TRIGGER "+triggerAndSeq[0]+" BEFORE INSERT ON TEMP_"+soapCallName+" FOR EACH ROW BEGIN <<COLUMN_SEQUENCES>> BEGIN IF INSERTING AND :NEW.ID IS NULL THEN SELECT "+triggerAndSeq[1]+".NEXTVAL INTO :NEW.ID FROM SYS.DUAL; END IF; END COLUMN_SEQUENCES; END;";
+		
+		try {
+			Statement createTempTableStmt;
+			createTempTableStmt = conn.createStatement();
+			createTempTableStmt.executeUpdate(createTriggerQuery);
+			createTempTableStmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		}
 			// INSERIMENTO DATI NELLA TABELLA TEMP
 			
 			System.out.println("Inserimento dati nella tabella. Attendere...");
@@ -157,7 +173,6 @@ public class JavaApi {
 						insertQueryStmt = conn.createStatement();
 						insertQueryStmt.executeUpdate(query);
 						insertQueryStmt.close();
-						System.out.println(query);
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}

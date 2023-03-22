@@ -19,7 +19,6 @@ public class AnagraficaPlant implements Entita {
 		INDIRIZZO = anag.get("d4p1:INDIRIZZO");
 		REGIONE = anag.get("d4p1:REGIONE");
 		SOCIETA = anag.get("d4p1:SOCIETA");
-
 	}
 
 	@Override

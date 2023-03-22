@@ -13,9 +13,6 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -105,8 +102,6 @@ public class AttachmentCall {
 			
 			NodeList nodeList = doc.getElementsByTagName(parentNodeName);
 			
-			if(nodeList.getLength()>0)
-			{System.out.println(nodeList.getLength());}
 			
 			for (int itr = 0; itr < nodeList.getLength(); itr++) {
 

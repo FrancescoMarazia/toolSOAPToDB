@@ -50,4 +50,17 @@ public class Queries {
 		}
 		return sortingField;
 	}
+	
+	public static String[] getTrigger(String tipoChiamata) {
+		String trigger = null;
+		String seq = null;
+		switch(tipoChiamata) {
+		
+		case "SALUTE_CONTRATTI_T601":
+			trigger = "SALUTE_CONTRATTI_T601_BEFORE_INSERT";
+			seq = "SALUTE_CONTRATTI_T601_SEQ";
+			break;	
+		}
+		return new String[] {trigger,seq};
+	}
 }
