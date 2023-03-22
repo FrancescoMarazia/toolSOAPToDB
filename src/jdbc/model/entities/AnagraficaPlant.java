@@ -25,7 +25,5 @@ public class AnagraficaPlant implements Entita {
 	public String generaQuery() {
 		// TODO Auto-generated method stub
 		return "SELECT '"+AREA_VALORIZZAZIONE+"','"+DIVISIONE+"','"+DIVISIONE_LOCALITA.replace("'", "''")+"','"+DIVISIONE_NAME.replace("'", "''")+"','"+DIVISIONE_NAZIONE+"','"+ID_SIS_SORGENTE+"','"+INDIRIZZO.replace("'", "''")+"','"+REGIONE+"','"+SOCIETA+"' FROM DUAL ";
-
 	}
-
 }
