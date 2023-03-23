@@ -58,7 +58,8 @@ public class JavaApi {
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_ORDINE_DI_LAVORO_T600) {
+				if(tipoChiamata == TypeChiamata.SALUTE_ORDINE_DI_LAVORO_T600) // CONTROLLO SELETTIVAMENTE QUALE TABELLA POPOLARE
+				{
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);
 				List<Entita> result = new ArrayList<Entita>();
@@ -81,20 +82,20 @@ public class JavaApi {
 					}
 				}
 					
-//					List<Entita> attachments = new ArrayList<Entita>();
-//					
-//					for(int i = 0; i < result.size();i++) {
-//						
-//						Contratto contratto = (Contratto) result.get(i);				
-//						AttachmentCall allegati = new AttachmentCall(contratto.ID_SIS_SORGENTE);
-//						
-//						List<Entita> contratto_attas = new ArrayList<Entita>();
-//						
-//						contratto_attas = allegati.getAttachments(contratto.NUM_DOC);
-//						attachments.addAll(contratto_attas);
-//						
-//					}
-//					updateTable(conn,attachments,"SALUTE_ATTACHMENT_T607",false,startDate);
+					List<Entita> attachments = new ArrayList<Entita>();
+					
+					for(int i = 0; i < result.size();i++) {
+						
+						Contratto contratto = (Contratto) result.get(i);				
+						AttachmentCall allegati = new AttachmentCall(contratto.ID_SIS_SORGENTE);
+						
+						List<Entita> contratto_attas = new ArrayList<Entita>();
+						
+						contratto_attas = allegati.getAttachments(contratto.NUM_DOC);
+						attachments.addAll(contratto_attas);
+						
+					}
+					updateTable(conn,attachments,"SALUTE_ATTACHMENT_T607",false,startDate);
 				}
 			}
 			
