@@ -36,11 +36,11 @@ public class JavaApi {
 
 		LocalDate currentDate = java.time.LocalDate.now();
 			
-//		LocalDate startDate = currentDate.minusYears(5).withMonth(1).withDayOfMonth(1);
+//		LocalDate startDate = currentDate.minusYears(5).withMonth(1).withDayOfMonth(1);   /* POPOLA LE TABELLE AGGIORNANDO SOLO I DATI DEGLI ULTIMI 5 ANNI*/
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String formattedDate = "2000-01-01";
-		LocalDate startDate = LocalDate.parse(formattedDate,formatter);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");        /*                                            */
+		String formattedDate = "2000-01-01";											/* POPOLA LE TABELLE A PARTIRE DAL 2000-01-01 */
+		LocalDate startDate = LocalDate.parse(formattedDate,formatter);					/*                                            */
 
 		try {
 
@@ -52,13 +52,13 @@ public class JavaApi {
 				Integer chunksInterval = null;
 				switch(tipoChiamata) {
 				case SALUTE_FATTURE_T603:
-					chunksInterval = 2;
+					chunksInterval = 2;    // IL DIVISORE DEL RANGE DI DATE (IN MESI)
 					break;
 				case SALUTE_CONTRATTI_T601:
 					chunksInterval = 12;
 					break;	
 				}
-				if(tipoChiamata == TypeChiamata.SALUTE_ORDINE_DI_LAVORO_T600) // CONTROLLO SELETTIVAMENTE QUALE TABELLA POPOLARE
+				if(tipoChiamata == TypeChiamata.SALUTE_ATTIVITA_CONTRATTO_T609) // CONTROLLO SELETTIVAMENTE QUALE TABELLA POPOLARE
 				{
 			
 				List<LocalDate[]> chunks = splitDateRange(startDate,currentDate,chunksInterval);

@@ -29,11 +29,16 @@ public class Queries {
 		case "SALUTE_ATTACHMENT_T607":
 			query = "INSERT INTO "+tableName+" (EBELN, FILENAME, EXTENSION, ATTA_DATE, AUTHOR, FIELDKEY,ID,SERVIZIO) with p (EBELN, FILENAME, EXTENSION, ATTA_DATE, AUTHOR, FIELDKEY,ID,SERVIZIO) as (";
 			break;
+		case "SALUTE_ATTIVITA_CONTRATTO_T609":
+			query = "INSERT INTO "+tableName+" (ID_SIS_SORGENTE, NUM_DOC, POS_DOC, NUM_PACCHETTO, NUM_RIGA, NOME_CATALOGO_PRESTAZIONI,DESCRIZIONE_MEDIA,QUANTITA,SOCICHIAVE_DIVISA,IMPORTO_TOTALE) with p (ID_SIS_SORGENTE, NUM_DOC, POS_DOC, NUM_PACCHETTO, NUM_RIGA, NOME_CATALOGO_PRESTAZIONI,DESCRIZIONE_MEDIA,QUANTITA,SOCICHIAVE_DIVISA,IMPORTO_TOTALE) as (";
+			break;
 		}
 		return query;
 	}
 	
-	public static String getSortingField(String tipoChiamata) {
+	
+	
+	public static String getSortingField(String tipoChiamata) {   // RIGUARDA SOLO LE CHIAMATE CHE RICHIEDONO LA DATA
 		String sortingField = "";
 		switch(tipoChiamata) {
 		
@@ -51,7 +56,9 @@ public class Queries {
 		return sortingField;
 	}
 	
-	public static String[] getTrigger(String tipoChiamata) {
+	
+	
+	public static String[] getTrigger(String tipoChiamata) {  // CREA L'AUTO INCREMENT PER LA COLONNA ID DELLA TABELLA CONTRATTI
 		String trigger = null;
 		String seq = null;
 		switch(tipoChiamata) {

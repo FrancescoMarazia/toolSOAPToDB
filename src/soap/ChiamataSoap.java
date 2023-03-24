@@ -26,6 +26,7 @@ import jdbc.model.entities.Contratto;
 import jdbc.model.entities.Fattura;
 import jdbc.model.entities.Entita;
 import jdbc.model.entities.Mda;
+import jdbc.model.entities.AttivitaContratto;
 import jdbc.model.entities.OrdineDiLavoro;
 import jdbc.model.entities.PartnerContratto;
 
@@ -81,6 +82,11 @@ public class ChiamataSoap{
 		case SALUTE_PARTNER_CONTRATTO_T605: 
 			xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\" xmlns:pdh=\"http://schemas.datacontract.org/2004/07/Pdh.Models\"> <soapenv:Header/> <soapenv:Body> <tem:GetPartnerContratto> <tem:req> <pdh:EndDate>"+this.currentDate+"</pdh:EndDate> <pdh:StartDate>"+this.startDate+"</pdh:StartDate> </tem:req> </tem:GetPartnerContratto> </soapenv:Body> </soapenv:Envelope>";
 			parentNodeName = "d4p1:RecordPartnerContratto";
+			break;
+		case SALUTE_ATTIVITA_CONTRATTO_T609: 
+			xml = "";  //  va inserito il body della chiamata Attività contratto 
+			parentNodeName = "";  // va inserito il nome dell'elemento così come è ritornato nella response della chiamata
+
 			break;
 		}
 
@@ -171,6 +177,10 @@ public class ChiamataSoap{
 					case SALUTE_PARTNER_CONTRATTO_T605: 
 						PartnerContratto partnerC = new PartnerContratto(callObj);
 						objectsList.add(partnerC);
+						break;
+					case SALUTE_ATTIVITA_CONTRATTO_T609: 
+						AttivitaContratto attContr = new AttivitaContratto(callObj);
+						objectsList.add(attContr);
 						break;
 					}
 				}
